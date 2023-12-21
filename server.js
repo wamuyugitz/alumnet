@@ -2,6 +2,7 @@ const session = require('express-session');
 const NeDBStore = require('connect-nedb-session')(session);
 const express = require('express');
 const multer = require('multer');
+const bcrypt = require('bcrypt');
 const path = require('path');
 const flash = require('connect-flash'); // Include connect-flash
 const app = express();
@@ -91,7 +92,7 @@ app.get('/seedEvents', (req, res) => {
 
 // Define a middleware to check if the user is the manager
 const isManagerAuthenticated = (req, res, next) => {
-  if (req.isAuthenticated() && req.user.email === 'manager@alueducation.com') { 
+  if (req.session.user.email === 'manager@alueducation.com') { 
       return next();
   } else {
       res.status(403).send('Access Denied: You are not authorized to view this page');
@@ -103,17 +104,17 @@ app.use(express.json());
 
 
 const isAuthenticated = (req, res, next) => {
-  if (req.user && req.user._id) {
+  console.log(req.session.user)
+  if (req.session.user && req.session.user._id) {
     return next(); // The user is authenticated, proceed to the next function
 } else {
-  console.log("user logged:", req.user)
+  // console.log("user logged:", user)
     res.status(401).send('User not authenticated'); // Unauthorized access
 }
 }
 
 app.get('/dashboard', isAuthenticated, (req, res) => {
-  console.log("req.user: ", req.user)
-  eventsDB.find({ participants: req.user._id }, (err, events) => {
+  eventsDB.find({ participants: req.session.user._id }, (err, events) => {
       if (err) {
           // handle error, perhaps render the dashboard with an error message or empty events
           console.error('Error fetching events:', err);
@@ -125,16 +126,53 @@ app.get('/dashboard', isAuthenticated, (req, res) => {
   });
 });
 
-app.post('/login', passport.authenticate('local', {
-  failureRedirect: '/views/login.html',
-  failureFlash: true
-}), (req, res) => {
-  // Redirect manager to the manager dashboard
-  if (req.user.email === 'manager@alueducation.com') {
-      return res.redirect('/manager_dashboard');
+// app.post('/login', passport.authenticate('local', {
+//   failureRedirect: '/views/login.html',
+//   failureFlash: true
+// }), (req, res) => {
+//   // Redirect manager to the manager dashboard
+//   if (req.user.email === 'manager@alueducation.com') {
+//       return res.redirect('/manager_dashboard');
+//   }
+//   // Redirect alumni to the alumni dashboard
+//   return res.redirect('/dashboard');
+// });
+
+const saltRounds = 10;
+const plaintextPassword = 'wamuyu';
+
+const hash = bcrypt.hashSync(plaintextPassword, saltRounds);
+console.log(hash)
+
+const managerpass = bcrypt.hashSync("manager@ALU", saltRounds);
+console.log(managerpass)
+
+const MANAGER_EMAIL = "manager@alueducation.com";
+
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  console.log(email, password)
+
+  const user = await alumniDB.findOne({ email });
+
+  if (!user) {
+    res.render('/views/login.html')
   }
-  // Redirect alumni to the alumni dashboard
-  return res.redirect('/dashboard');
+
+  if (!bcrypt.compareSync(password, user.password)) {
+    console.log("i am here baby")
+    res.render('/views/login.html')
+  }
+
+  req.session.user = user;
+
+  if (user.email === MANAGER_EMAIL) {
+    return res.redirect('/manager_dashboard')
+  }
+  else {
+    return res.redirect('/dashboard');
+  }
+  
 });
 
 
@@ -145,7 +183,7 @@ app.post('/participate', isAuthenticated, (req, res) => {
   if (!eventId) {
     return res.status(400).send('Event ID is required.');
   }
-  const userId = req.user._id;
+  const userId = req.session.user._id;
 
   // Find the specific event
   eventsDB.findOne({ _id: eventId }, (err, event) => {
@@ -197,10 +235,10 @@ app.post('/participate', isAuthenticated, (req, res) => {
 });
 
 app.get('/dashboard', function(req, res) {
-  var userId = req.user._id; // the user ID from a session or token
+  var userId = req.session.user._id; // the user ID from a session or token
   
   // The query should find events where the user's ID is in the participants array
-  eventsDB.find({ participants: req.user._id }, (err, events) => {
+  eventsDB.find({ participants: req.session.user._id }, (err, events) => {
     // handle error or success
     // return the events to the dashboard
   });
@@ -225,7 +263,7 @@ app.get('/events', (req, res) => {
     } else {
       // Include the messages object
       res.render('Events', { 
-        user: req.user, 
+        user: req.session.user, 
         events: events, 
         event: {}, 
         messages: req.flash() // Include the messages object
@@ -247,10 +285,10 @@ app.get('/isAlumniSignedIn', (req, res) => {
 
 app.get('/alumni_dashboard', isAuthenticated, (req, res) => {
   // The `req.user` object should contain the authenticated user's data, including the ID
-  const userId = req.user._id;
+  const userId = req.session.user._id;
 
   // Fetch the user's events from the alumniDB
-  eventsDB.find({ participants: req.user._id }, (err, events) => {
+  eventsDB.find({ participants: req.session.user._id }, (err, events) => {
     if (err) {
       // Handle the error (e.g., render an error page)
       return res.status(500).send('Internal Server Error');
@@ -398,7 +436,7 @@ app.post('/deleteEvent/:eventId', (req, res) => {
 
 app.post('/removeEventFromDashboard', isAuthenticated, function(req, res) {
   // Get the user's ID and the event ID from the request
-  const userId = req.user._id; // Assuming req.user._id contains the logged-in user's ID
+  const userId = req.session.user._id; // Assuming req.user._id contains the logged-in user's ID
   const eventIdToRemove = req.body.eventId;
 
   // Find the specific event by ID
@@ -443,27 +481,35 @@ app.get('/login', (req, res) => {
 });
 
 // Direct route to manager dashboard without authentication
-app.get('/manager_dashboard', isManagerAuthenticated,(req, res) => {
-  console.log("Manager Authenticated:", req.isAuthenticated());
-    console.log("Manager User:", req.user);
-  
-  eventsDB.find({}, (err, events) => {
-      if (err) {
-          console.error('Error fetching events:', err);
-          return res.status(500).send('Internal Server Error');
-      }
-      alumniDB.find({}, (err, alumni) => {
-          if (err) {
-              console.error('Error fetching alumni:', err);
-              return res.status(500).send('Internal Server Error');
-          }
-          res.render('manager_dashboard', {
-              events: events, 
-              alumni: alumni, 
-              messages: req.flash() // Include the messages object
-          });
+app.get('/manager_dashboard', isManagerAuthenticated, async (req, res) => {
+  try {
+      // Use async/await to fetch data asynchronously
+      const alumni = await alumniDB.find({});
+
+      eventsDB.find({}, (err, events) => {
+        if (err) {
+          // Handle error
+          console.error('Error finding event:', err);
+          return res.status(500).json({ error: 'Error finding event' });
+        }
+    
+        if (!events) {
+          // Event not found
+          return res.status(404).json({ error: 'Event not found' });
+        }
+
+        res.render('manager_dashboard', {
+          events: events,
+          alumni: alumni,
+          messages: req.flash() // Include the messages object
       });
-  });
+      });
+
+      
+  } catch (err) {
+      console.error('Error fetching data:', err);
+      res.status(500).send('Internal Server Error');
+  }
 });
 
 
