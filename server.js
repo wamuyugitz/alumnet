@@ -25,7 +25,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Set up your NeDB databases for alumni and events
 const eventsDB = new nedb({ filename: 'events.db', autoload: true });
-const alumniDB = new nedb({ filename: 'alumni.db', autoload: true });
+// const alumniDB = new nedb({ filename: 'alumni.db', autoload: true });
+const alumniDB = require('./alumni-model')
 
 alumniDB.on('error', (err) => {
   console.error('Error while initializing alumni database:', err);
