@@ -101,17 +101,9 @@ const isManagerAuthenticated = (req, res, next) => {
 // For parsing JSON payloads
 app.use(express.json());
 
-// Initialize Passport and session support
-app.use(passport.initialize());
-app.use(passport.session());
-
-
-// Serve static assets (CSS, images, etc.) from the "public" folder
-app.use('/public', express.static(path.join(__dirname, 'public')));
-
 
 const isAuthenticated = (req, res, next) => {
-  if (req.user && req.user._id) {
+  if (req.session.user && req.session.user._id) {
     return next(); // The user is authenticated, proceed to the next function
 } else {
     res.status(401).send('User not authenticated'); // Unauthorized access
