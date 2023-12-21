@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manager Dashboard</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/public/css/manager_dashboard.css">
+
+    <style>
+       
+    </style>
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand ml-3" href="#">Alum<span style="color: navy;">Net</span></a>
+        
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+
+        
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Code below aligns items to the right -->
+                <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                  <a class="nav-link" href="/views/index.html">Home</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="#About">About Us</a>
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" href="/events">Events</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Contact Us</a>
+                  </li>
+                  
+            </ul>
+            </div>
+          </nav>
+    </header>
+    <div class="container mt-5">
+
+        <!-- Flash Messages Section -->
+        <% if (messages.error && messages.error.length > 0) { %>
+            <% messages.error.forEach(function(message) { %>
+                <div class="alert alert-danger"><%= message %></div>
+            <% }) %>
+        <% } %>
+
+        <% if (messages.success && messages.success.length > 0) { %>
+            <% messages.success.forEach(function(message) { %>
+                <div class="alert alert-success"><%= message %></div>
+            <% }) %>
+        <% } %>
+        <h1 class="text-center">Manager Dashboard</h1>
+
+        <!-- Section for Viewing and Managing Events -->
+        <div class="mt-4">
+            <h2>Events Overview</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% events.forEach(function(event) { %>
+                        <tr>
+                            <td><%= event.title %></td>
+                            <td><%= event.description %></td>
+                            <td><%= event.category %></td>
+                            <td>
+                                <a href="/events/edit/<%= event._id %>" class="btn btn-secondary btn-sm">Edit</a>
+                                <!-- Existing delete form -->
+                                <form action="/deleteEvent/<%= event._id %>" method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+            <a href="/events/new" class="btn btn-success">Create New Event</a>
+        </div>
+
+        <!-- Section for Managing Alumni Records -->
+        <div class="mt-4">
+            <h2>Alumni Records</h2>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% alumni.forEach(function(alumnus) { %>
+                        <tr>
+                            <td><%= alumnus.name %></td>
+                            <td><%= alumnus.email %></td>
+                            <td>
+                                <a href="/alumni/edit/<%= alumnus._id %>" class="btn btn-secondary btn-sm">Edit</a>
+                                <form action="/alumni/delete/<%= alumnus._id %>" method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+            <a href="/alumni/new" class="btn btn-primary">Add Alumni</a>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS and its dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>

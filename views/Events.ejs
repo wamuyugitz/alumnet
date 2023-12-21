@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumni Events</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="/public/css/events.css">
+</head>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand ml-3" href="#">Alum<span style="color: navy;">Net</span></a>
+        
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/views/index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#About">About Us</a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="/views/Events.html">Events <span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact Us</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="btn btn-primary" href="/views/login.html" role="button">Sign in</a>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <div class="container mt-4">
+
+        <!-- Flash Messages Section -->
+        <% if (messages.error && messages.error.length > 0) { %>
+            <% messages.error.forEach(function(message) { %>
+                <div class="alert alert-danger"><%= message %></div>
+            <% }) %>
+        <% } %>
+
+        <% if (messages.success && messages.success.length > 0) { %>
+            <% messages.success.forEach(function(message) { %>
+                <div class="alert alert-success"><%= message %></div>
+            <% }) %>
+        <% } %>
+        
+        <h1>Welcome to the Alumni Events Page</h1>
+        
+        <!-- Display Upcoming Events -->
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <h2>Upcoming Events</h2>
+                <!-- Add a card for each event -->
+                <div class="card-deck">
+                    <% events.forEach(event => { %>
+                        <div class="card" style="width:20rem;">
+                            <!-- Display event properties dynamically -->
+                            <img src="<%= event.image %>" class="card-img-top" alt="<%= event.title %> Image" style="max-width: 40%;">
+                            <div class="card-body">
+                                <h5 class="card-title"><%= event.title %></h5>
+                                <p class="card-text"><%= event.description %></p>
+                                <!-- Add buttons for alumni actions -->
+        
+                                
+                                <form action="/participate" method="post">
+                                    <input type="hidden" name="eventId" value="<%= event._id %>">
+                                    <button type="submit" class="btn btn-primary participateButton">Participate</button>
+                                </form>
+                                 <!-- Edit Button Form -->
+                        <form action="/editEvent/<%= event._id %>" method="get" style="display: inline-block;">
+                            <button type="submit" class="btn btn-secondary">Edit</button>
+                        </form>
+
+                        <!-- Delete Button Form -->
+                        <form action="/deleteEvent/<%= event._id %>" method="post" style="display: inline-block;">
+                             <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+  
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            </div>
+        </div>
+
+        <div>
+           <p>View the Alumni dashboard <a href="/alumni_dashboard">here</a></p>
+
+        </div>
+
+     <!-- Add New Event Section -->
+     <div class="row mt-4">
+        <div class="col-md-12">
+            <h2><%= typeof event !== 'undefined' ? 'Edit' : 'Add New' %> Event</h2>
+            <!-- The form will either update an existing event or create a new one using the /events/save route -->
+            <form action="/events/save" method="post">
+                <!-- Hidden field to store event ID when updating an event -->
+                <input type="hidden" name="eventId" value="<%= typeof event !== 'undefined' ? event._id : '' %>">
+                
+                <div class="form-group">
+                    <label for="eventTitle">Event Title</label>
+                    <input type="text" class="form-control" name="title" id="eventTitle" placeholder="Enter event title" required value="<%= typeof event !== 'undefined' ? event.title : '' %>">
+                </div>
+                <div class="form-group">
+                    <label for="eventDescription">Event Description</label>
+                    <textarea class="form-control" name="description" id="eventDescription" rows="3" placeholder="Enter event description" required><%= typeof event !== 'undefined' ? event.description : '' %></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="eventCategory">Event Category</label>
+                    <select class="form-control" name="category" id="eventCategory">
+                        <option value="professional" <%= event && event.category === 'professional' ? 'selected' : '' %>>Professional Development</option>
+                        <option value="networking" <%= event && event.category === 'networking' ? 'selected' : '' %>>Networking</option>
+                        <option value="campus" <%= event && event.category === 'campus' ? 'selected' : '' %>>Campus Event</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn btn-success"><%= typeof event !== 'undefined' ? 'Update Event' : 'Create Event' %></button>
+            </form>
+        </div>
+    </div>
+    
+
+
+
+    </div>
+    <script src="/public/js/app.js"></script>
+</body>
+</html>

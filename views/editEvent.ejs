@@ -1,0 +1,40 @@
+<div class="row mt-4">
+    <div class="col-md-12">
+
+       <!-- Flash Messages -->
+       <% if (messages.error && messages.error.length > 0) { %>
+        <% messages.error.forEach(function(message) { %>
+            <div class="alert alert-danger"><%= message %></div>
+        <% }) %>
+    <% } %>
+
+    <% if (messages.success && messages.success.length > 0) { %>
+        <% messages.success.forEach(function(message) { %>
+            <div class="alert alert-success"><%= message %></div>
+        <% }) %>
+    <% } %>
+    
+      <h2>Edit Event</h2>
+      <!-- Add a form for editing events -->
+      <form action="/edit/<%= event._id %>" method="POST">
+        <div class="form-group">
+          <label for="eventTitle">Event Title</label>
+          <input type="text" class="form-control" id="eventTitle" name="eventTitle" value="<%= event.title %>">
+        </div>
+        <div class="form-group">
+          <label for="eventDescription">Event Description</label>
+          <textarea class="form-control" id="eventDescription" name="eventDescription" rows="3"><%= event.description %></textarea>
+        </div>
+        <div class="form-group">
+          <label for="eventCategory">Event Category</label>
+          <select class="form-control" id="eventCategory" name="eventCategory">
+            <option value="professional" <% if (event.category === 'professional') { %>selected<% } %>>Professional Development</option>
+            <option value="networking" <% if (event.category === 'networking') { %>selected<% } %>>Networking</option>
+            <option value="campus" <% if (event.category === 'campus') { %>selected<% } %>>Campus Event</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-success">Update Event</button>
+      </form>
+    </div>
+  </div>
+  

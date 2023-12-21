@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Alumni</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/public/css/edit_alumni.css">
+
+    <style>
+        .container {
+            margin-top: 20px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2 class="text-center">Edit Alumni Information</h2>
+        <form action="/alumni/save" method="post">
+            <!-- Hidden field for the alumni ID -->
+            <input type="hidden" name="alumniId" value="<%= alumnus._id %>">
+
+            <!-- Login Input -->
+            <div class="form-group">
+                <label for="login">Name:</label>
+                <input type="text" class="form-control" id="login" name="login" value="<%= alumnus.login %>" required>
+            </div>
+
+            <!-- Email Input -->
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" class="form-control" id="email" name="email" value="<%= alumnus.email %>" required>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary">Update Alumni</button>
+            <a href="/manager_dashboard" class="btn btn-secondary">Cancel</a>
+        </form>
+    </div>
+
+    <!-- Bootstrap JS and its dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
