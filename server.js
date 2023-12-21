@@ -32,7 +32,7 @@ alumniDB.on('error', (err) => {
 });
 
 app.use(session({
-  secret: 'yourSecretKey', 
+  secret: 'S3cR3tK3YY', 
   resave: false,
   saveUninitialized: false,
   store: new NeDBStore({
