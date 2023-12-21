@@ -106,6 +106,7 @@ const isAuthenticated = (req, res, next) => {
   if (req.session.user && req.session.user._id) {
     return next(); // The user is authenticated, proceed to the next function
 } else {
+  console.log("user logged:", req.user)
     res.status(401).send('User not authenticated'); // Unauthorized access
 }
 }
