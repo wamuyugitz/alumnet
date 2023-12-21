@@ -22,7 +22,7 @@ module.exports = function(passport) {
             // Alumni Authentication Logic
             try {
                 const user = await alumniDB.findOne({ email: email });
-                console.log("user", user)
+                
                 if (!user) {
                     return done(null, false, { message: 'No user found with this email' });
                 }
