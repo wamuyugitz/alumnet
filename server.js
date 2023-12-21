@@ -119,6 +119,7 @@ const isAuthenticated = (req, res, next) => {
 }
 
 app.get('/dashboard', isAuthenticated, (req, res) => {
+  console.log("req.user: ", req.user)
   eventsDB.find({ participants: req.user._id }, (err, events) => {
       if (err) {
           // handle error, perhaps render the dashboard with an error message or empty events
