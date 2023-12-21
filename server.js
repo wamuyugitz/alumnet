@@ -103,7 +103,7 @@ app.use(express.json());
 
 
 const isAuthenticated = (req, res, next) => {
-  if (req.session.user && req.session.user._id) {
+  if (req.user && req.user._id) {
     return next(); // The user is authenticated, proceed to the next function
 } else {
   console.log("user logged:", req.user)
