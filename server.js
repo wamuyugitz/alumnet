@@ -144,13 +144,6 @@ app.get('/dashboard', isAuthenticated, (req, res) => {
 // });
 
 const saltRounds = 10;
-const plaintextPassword = 'wamuyu';
-
-const hash = bcrypt.hashSync(plaintextPassword, saltRounds);
-console.log(hash)
-
-const managerpass = bcrypt.hashSync("manager@ALU", saltRounds);
-console.log(managerpass)
 
 const MANAGER_EMAIL = "manager@alueducation.com";
 
