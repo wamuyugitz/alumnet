@@ -234,15 +234,15 @@ app.post('/participate', isAuthenticated, (req, res) => {
   });
 });
 
-app.get('/dashboard', function(req, res) {
-  var userId = req.session.user._id; // the user ID from a session or token
+// app.get('/dashboard', function(req, res) {
+//   var userId = req.session.user._id; // the user ID from a session or token
   
-  // The query should find events where the user's ID is in the participants array
-  eventsDB.find({ participants: req.session.user._id }, (err, events) => {
-    // handle error or success
-    // return the events to the dashboard
-  });
-});
+//   // The query should find events where the user's ID is in the participants array
+//   eventsDB.find({ participants: req.session.user._id }, (err, events) => {
+//     // handle error or success
+//     // return the events to the dashboard
+//   });
+// });
 
 
 // Serve static HTML files from the "views" folder
