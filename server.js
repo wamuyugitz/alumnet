@@ -51,7 +51,12 @@ app.use(flash()); // Initialize connect-flash
 
 // Initialize Passport and session support
 app.use(passport.initialize());
-app.use(passport.session());
+// app.use(passport.session());
+
+app.use((req, res, next) => {
+  res.locals.user = req.session.user;
+  next();
+})
 
 // Serve static assets (CSS, images, etc.) from the "public" folder
 app.use('/public', express.static(path.join(__dirname, 'public')));
@@ -156,12 +161,11 @@ app.post('/login', async (req, res) => {
   const user = await alumniDB.findOne({ email });
 
   if (!user) {
-    res.render('/views/login.html')
+    res.render('/login')
   }
 
   if (!bcrypt.compareSync(password, user.password)) {
-    console.log("i am here baby")
-    res.render('/views/login.html')
+    res.render('/login')
   }
 
   req.session.user = user;
