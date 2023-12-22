@@ -37,14 +37,14 @@ app.use(session({
   secret: 'S3cR3tK3YY', 
   resave: false,
   saveUninitialized: false,
-  store: new NeDBStore({
-    filename: 'nedb_sessions.db'
-  }),
-  cookie: {
-    maxAge: 3600000, // 1 hour for example
-    httpOnly: true, // Helps against XSS attacks
-    secure: process.env.NODE_ENV === "production" // Cookie is sent over HTTPS only
-  }
+  // store: new NeDBStore({
+  //   filename: 'nedb_sessions.db'
+  // }),
+  // cookie: {
+  //   maxAge: 3600000, // 1 hour for example
+  //   httpOnly: true, // Helps against XSS attacks
+  //   secure: process.env.NODE_ENV === "production" // Cookie is sent over HTTPS only
+  // }
 }));
 
 app.use(flash()); // Initialize connect-flash
